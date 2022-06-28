@@ -55,6 +55,15 @@
             await goto("/");
         }
     };
+
+    const handleGoogleAuthSuccess = e => {
+        if (e.type === "auth-success") {
+            console.log("logged");
+            // getUserInfo();
+        } else {
+            console.log("Not logged in yet");
+        }
+    };
 </script>
 
 <CustomNavbar />
@@ -78,7 +87,8 @@
                 </FormGroup>
 
                 <Button color="primary">Login</Button>
-              </Form>
+            </Form>
+            <Button href="/oauth/google/login" rel="external">Login By Google</Button>
         </CardBody>
     </Card>
 </Container>
