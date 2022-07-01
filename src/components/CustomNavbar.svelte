@@ -13,8 +13,8 @@
         DropdownMenu,
         DropdownItem
     } from 'sveltestrap';
-    import { page } from '$app/stores';
     import { authStore } from "../stores/authStore";
+    import { userRoleState } from "../stores/userRoleState";
     import { goto } from '$app/navigation';
 
     let isOpen = false;
@@ -27,6 +27,11 @@
     authStore.subscribe(value => {
         isAuthenticated = value.isAuthenticated;
     });
+    let userRole = 'student';
+    userRoleState.subscribe(value => {
+        userRole = value;
+    });
+    console.log(userRole);
 
     const handleLogout = async () => {
         authStore.set({
@@ -36,14 +41,25 @@
         });
         await goto("/");
     }
+
 </script>
 
-<Navbar color="warning" light expand="md">
-    <NavbarBrand href="/">CoursePedia</NavbarBrand>
+<Navbar light expand="md" class="my-navbar">
+    <NavbarBrand href={userRole == 'student' ? '/' : '/instructor'}>CoursePedia</NavbarBrand>
     <NavbarToggler on:click={() => (isOpen = !isOpen)} />
     <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
         <Nav class="ms-auto" navbar>
             {#if isAuthenticated}
+                {#if userRole == 'student'}
+                    <NavItem>
+                        <NavLink href="/instructor">Instructor</NavLink>
+                    </NavItem>
+                {:else if userRole == 'instructor'}
+                    <NavItem>
+                        <NavLink href="/">Student</NavLink>
+                    </NavItem>
+                {/if}
+                
                 <NavItem>
                     <NavLink href="#" on:click={handleLogout}>Logout</NavLink>
                 </NavItem>
@@ -58,3 +74,9 @@
         </Nav>
     </Collapse>
 </Navbar>
+
+<style>
+    :global(.my-navbar) {
+        box-shadow: 0 1.5px 6px -4px gray;
+    }
+</style>
